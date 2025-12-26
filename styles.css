@@ -1,0 +1,734 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
+    touch-action: none;
+    position: relative;
+}
+
+/* How-to overlay */
+.howto-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.howto-overlay.hidden { display: none; }
+.howto-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(2px);
+}
+.howto-dialog {
+    position: relative;
+    max-width: 520px;
+    width: calc(100% - 40px);
+    background: linear-gradient(180deg, #fff 0%, #fff8e1 100%);
+    border-radius: 20px;
+    padding: 0 0 16px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+    border: 3px solid #8B4513;
+    overflow: hidden;
+}
+.howto-dialog h2 {
+    margin: 0;
+    padding: 16px 20px;
+    font-size: 22px;
+    color: #3d2b1f;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    text-align: center;
+}
+.howto-content {
+    padding: 16px 20px 0;
+}
+.howto-tip {
+    margin: 0 0 10px;
+    padding: 10px 12px;
+    background: rgba(255, 215, 0, 0.2);
+    border: 1px dashed #e0a800;
+    border-radius: 12px;
+    color: #6b4f2a;
+    font-weight: 600;
+}
+.howto-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 6px;
+}
+.howto-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid #f0e6d6;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+.howto-list li + li { margin-top: 8px; }
+.howto-icon {
+    width: 28px;
+    height: 28px;
+}
+.howto-label {
+    flex: 1;
+    color: #3d2b1f;
+    font-weight: 700;
+}
+.howto-score {
+    font-weight: 800;
+    font-size: 18px;
+}
+.howto-score.plus { color: #2e8b57; }
+.howto-score.minus { color: #c62828; }
+
+.howto-notes {
+    margin: 12px 0 0;
+    color: #5b4636;
+    font-size: 14px;
+}
+.howto-notes p { margin: 4px 0; }
+
+.howto-actions {
+    display: flex;
+    justify-content: center;
+    padding: 10px 20px 16px;
+}
+.howto-primary {
+    appearance: none;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    font-weight: bold;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+.howto-primary:hover { filter: brightness(1.05); }
+.howto-primary:active { transform: translateY(1px); }
+
+/* 添加動態背景粒子效果 */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    animation: float 6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+canvas {
+    display: block;
+    border-radius: 0;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+}
+
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* 遊戲UI增強樣式 */
+.game-ui-panel {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 10px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.timer-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.game-title {
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { filter: drop-shadow(0 0 5px #FFD700); }
+    to { filter: drop-shadow(0 0 20px #FFD700); }
+}
+
+.game-subtitle {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 20px 30px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* 瘋狂模式特效 */
+.crazy-mode {
+    animation: crazyShake 0.1s infinite;
+}
+
+@keyframes crazyShake {
+    0% { transform: translate(0); }
+    25% { transform: translate(-2px, 2px); }
+    50% { transform: translate(2px, -2px); }
+    75% { transform: translate(-2px, -2px); }
+    100% { transform: translate(2px, 2px); }
+}
+
+/* 遊戲說明彈窗 */
+.howto-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.howto-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.howto-dialog {
+    position: relative;
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 3px solid #FFD700;
+}
+
+#howto-title {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    margin: 0;
+    padding: 20px 30px;
+    border-radius: 17px 17px 0 0;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.howto-content {
+    padding: 30px;
+}
+
+.howto-tip {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-left: 4px solid #2196f3;
+    padding: 15px 20px;
+    margin: 0 0 25px 0;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #1565c0;
+    font-weight: 500;
+}
+
+.howto-tip kbd {
+    display: inline-block;
+    padding: 3px 8px;
+    margin: 0 2px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: "Courier New", Courier, monospace;
+    color: #1a237e; /* 深藍色，搭配 .howto-tip 的藍色系 */
+    background: #fff;
+    border: 2px solid #90caf9; /* 淺藍色邊框 */
+    border-radius: 6px;
+    box-shadow: 0 2px 0 #90caf9; /* 底部做出厚度感 */
+    position: relative;
+    top: -1px;
+}
+
+.howto-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 25px 0;
+}
+
+.howto-list li {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.howto-list li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #FFD700;
+}
+
+.howto-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 15px;
+    border-radius: 6px;
+}
+
+.howto-label {
+    flex: 1;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.howto-score {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 20px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.howto-score.plus {
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.howto-score.minus {
+    background: linear-gradient(135deg, #f44336, #ef5350);
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.howto-notes {
+    background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+    border: 2px solid #ff9800;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.howto-notes p {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: #e65100;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.howto-notes p:last-child {
+    margin-bottom: 0;
+}
+
+.howto-actions {
+    padding: 0 30px 30px 30px;
+    text-align: center;
+}
+
+.howto-primary {
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.howto-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    background: linear-gradient(135deg, #66bb6a, #4caf50);
+}
+
+.howto-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+}
+
+/* 響應式設計 */
+@media (max-width: 600px) {
+    .howto-dialog {
+        margin: 10px;
+        max-width: none;
+    }
+    
+    #howto-title {
+        font-size: 24px;
+        padding: 15px 20px;
+    }
+    
+    .howto-content {
+        padding: 20px;
+    }
+    
+    .howto-tip {
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+    
+    .howto-label {
+        font-size: 16px;
+    }
+    
+    .howto-score {
+        font-size: 16px;
+        padding: 4px 8px;
+        min-width: 50px;
+    }
+    
+    .howto-notes p {
+        font-size: 14px;
+    }
+    
+    .howto-primary {
+        font-size: 18px;
+        padding: 12px 30px;
+    }
+    
+    .howto-actions {
+        padding: 0 20px 20px 20px;
+    }
+}
+
+/* Pause Menu Styles */
+#pause-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Add some space between buttons */
+    z-index: 2000; /* Make sure it's on top */
+}
+
+#pause-menu.hidden {
+    display: none !important;
+}
+
+/* Base styles for both pause menu buttons */
+#pause-menu #resume-button, #pause-menu #rate-button {
+    border: 2px solid transparent; /* Reserve space for border */
+    padding: 15px 0; /* Vertical padding, horizontal is 0 as width is fixed */
+    margin: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 50px; /* More rounded */
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+    display: inline-block;
+    width: 220px; /* Ensure same fixed width */
+    box-sizing: border-box; /* Include padding and border in the total width */
+    text-align: center;
+}
+
+/* Primary Button: Resume */
+#pause-menu #resume-button {
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    color: #000;
+    border-color: #FFD700;
+}
+
+/* Secondary Button: Rate */
+#pause-menu #rate-button {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+/* --- Hover Effects --- */
+
+/* Hover for Resume button */
+#pause-menu #resume-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+    filter: brightness(1.1);
+}
+
+/* Hover for Rate button */
+#pause-menu #rate-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Active/Press effect for both */
+#pause-menu #resume-button:active, #pause-menu #rate-button:active {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#pause-info {
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: 16px;
+    z-index: 10;
+    pointer-events: none;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bouncing-egg {
+    width: 80px;
+    height: 80px;
+    animation: bounce 0.8s infinite alternate;
+}
+
+.loading-text {
+    margin-top: 20px;
+    color: #ffd700;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+@keyframes bounce {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(-20px);
+    }
+}
+
+/* --- Share Container --- */
+#share-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 15px 25px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 2001; /* Above pause menu */
+    text-align: center;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    pointer-events: none;
+}
+
+#share-container:not(.hidden) {
+    opacity: 1;
+    pointer-events: all;
+}
+
+
+#share-container > p {
+    margin: 0 0 10px;
+    font-weight: bold;
+    font-size: 18px;
+    color: #ffd700;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.share-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+}
+
+.share-btn span {
+    margin-left: 8px;
+}
+
+.share-btn:before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.share-btn.twitter {
+    background-color: #1DA1F2;
+}
+.share-btn.twitter:before {
+    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.39.106-.803.163-1.227.163-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z"/></svg>');
+}
+
+.share-btn.facebook {
+    background-color: #1877F2;
+}
+
+.share-btn.facebook:before {
+    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>');
+}
+
+
+.share-btn.copy-link {
+    background-color: #6c757d;
+}
+
+.share-btn.copy-link:before {
+     background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>');
+}
+
+
+.copy-feedback {
+    color: #ffd700;
+    font-size: 12px;
+    margin-top: 8px;
+    height: 15px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.copy-feedback:not(.hidden) {
+    opacity: 1;
+}
+
+

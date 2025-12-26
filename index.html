@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>接雞蛋大挑戰</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+</head>
+<body>
+
+<div id="share-container" class="hidden">
+    <p>分享你的戰績！</p>
+    <div class="share-buttons">
+        <a id="share-twitter" class="share-btn twitter" href="#" target="_blank"><span>Twitter</span></a>
+        <a id="share-facebook" class="share-btn facebook" href="#" target="_blank"><span>Facebook</span></a>
+        <button id="copy-link" class="share-btn copy-link"><span>複製連結</span></button>
+    </div>
+    <p id="copy-feedback" class="copy-feedback hidden">已複製！</p>
+</div>
+
+<div id="loading-overlay" class="hidden">
+    <div class="loading-content">
+        <img src="https://cdn-icons-png.flaticon.com/128/528/528166.png" alt="Loading Egg" class="bouncing-egg">
+        <p class="loading-text">雞蛋準備中...</p>
+    </div>
+</div>
+
+<div id="pause-info">按 ESC鍵暫停</div>
+<div id="game-container"></div>
+
+<div id="howto-overlay" class="howto-overlay hidden" aria-hidden="true">
+  <div class="howto-backdrop"></div>
+  <div class="howto-dialog" role="dialog" aria-modal="true" aria-labelledby="howto-title">
+    <h2 id="howto-title">遊戲說明</h2>
+    <div class="howto-content">
+      <p class="howto-tip">使用 <kbd>A</kbd>、<kbd>D</kbd> 鍵或左右方向鍵來控制籃子，接住好東西、避開壞東西！</p>
+      <ul class="howto-list">
+        <li>
+          <img src="https://cdn-icons-png.flaticon.com/128/528/528166.png" alt="egg" class="howto-icon">
+          <span class="howto-label">雞蛋</span>
+          <span class="howto-score plus">+10</span>
+        </li>
+        <li>
+          <img src="https://cdn-icons-png.flaticon.com/128/16575/16575757.png" alt="gold" class="howto-icon">
+          <span class="howto-label">金塊</span>
+          <span class="howto-score plus">+100</span>
+        </li>
+        <li>
+          <img src="https://cdn-icons-png.flaticon.com/128/10291/10291934.png" alt="bad egg" class="howto-icon">
+          <span class="howto-label">壞蛋</span>
+          <span class="howto-score minus">-10</span>
+        </li>
+        <li>
+          <img src="https://cdn-icons-png.flaticon.com/128/8517/8517884.png" alt="bomb" class="howto-icon">
+          <span class="howto-label">炸彈</span>
+          <span class="howto-score minus">-50</span>
+        </li>
+      </ul>
+      <div class="howto-notes">
+        <p>分數 ≤ -100 會直接死亡；時間到將結算分數。</p>
+        <p>最後 30 秒進入瘋狂模式：速度更快、炸彈更多！</p>
+      </div>
+    </div>
+    <div class="howto-actions">
+      <button id="howto-start-btn" class="howto-primary">我知道了，開始！</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="pause-menu" class="hidden">
+    <button id="resume-button">回到遊戲</button>
+    <a id="rate-button" href="#" target="_blank">給點評價</a>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
+
