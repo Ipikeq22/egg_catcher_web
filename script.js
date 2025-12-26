@@ -391,6 +391,7 @@ function setup() {
 
     // 創建開始按鈕
     createStartButton();
+    createDeveloperButton();
     
     // 鍵盤控制設定
     window.addEventListener('keydown', onKeyDown);
@@ -519,6 +520,44 @@ function createStartButton() {
     });
     
     gameOverScene.addChild(startButton);
+}
+
+function createDeveloperButton() {
+    const developerButton = new PIXI.Container();
+
+    const buttonBg = new PIXI.Graphics();
+    buttonBg.beginFill(0x6c757d, 0.8); // A more subtle color
+    buttonBg.lineStyle(2, 0xadb5bd);
+    buttonBg.drawRoundedRect(0, 0, 160, 45, 22);
+    buttonBg.endFill();
+
+    developerButton.addChild(buttonBg);
+
+    const buttonText = new PIXI.Text('開發人員', new PIXI.TextStyle({
+        fontFamily: "Microsoft JhengHei",
+        fontSize: 18,
+        fill: "#FFFFFF",
+        fontWeight: 'normal'
+    }));
+    buttonText.anchor.set(0.5);
+    buttonText.x = 80;
+    buttonText.y = 22.5;
+    developerButton.addChild(buttonText);
+
+    developerButton.x = app.screen.width / 2 - 80;
+    developerButton.y = app.screen.height / 2 + 130; // Position below the start button
+    developerButton.eventMode = 'static';
+    developerButton.cursor = 'pointer';
+
+    developerButton.on('pointerdown', () => {
+        playSound('btn');
+        const developerModal = document.getElementById('developer-modal');
+        if (developerModal) {
+            developerModal.classList.remove('hidden');
+        }
+    });
+
+    gameOverScene.addChild(developerButton);
 }
 
 function createRestartButton() {
@@ -1220,6 +1259,16 @@ document.addEventListener('DOMContentLoaded', () => {
             hideHowtoOverlay();
         });
     }
+
+    const developerModal = document.getElementById('developer-modal');
+    const developerBackButton = document.getElementById('developer-back-button');
+
+    if (developerModal && developerBackButton) {
+        developerBackButton.addEventListener('click', () => {
+            playSound('btn');
+            developerModal.classList.add('hidden');
+        });
+    }
 });
 
 // 初始化圖片並開始遊戲
@@ -1291,14 +1340,14 @@ function setupShareButtons(score) {
     
     if (isPlaceholderUrl) {
         // 如果是預設 URL，分享時不帶上 URL，避免分享無效連結
-        shareTwitterBtn.href = `https://twitter.com/intent/tweet?text=${encodedText}`;
-        shareFacebookBtn.href = `https://www.facebook.com/sharer/sharer.php?quote=${encodedText}`;
-        copyLinkBtn.querySelector('span').textContent = '複製戰績';
+        if (shareTwitterBtn) shareTwitterBtn.href = `https://twitter.com/intent/tweet?text=${encodedText}`;
+        if (shareFacebookBtn) shareFacebookBtn.href = `https://www.facebook.com/sharer/sharer.php?quote=${encodedText}`;
+        if (copyLinkBtn) copyLinkBtn.querySelector('span').textContent = '複製戰績';
     } else {
         const encodedUrl = encodeURIComponent(gameUrl);
-        shareTwitterBtn.href = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`;
-        shareFacebookBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
-        copyLinkBtn.querySelector('span').textContent = '複製連結';
+        if (shareTwitterBtn) shareTwitterBtn.href = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`;
+        if (shareFacebookBtn) shareFacebookBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
+        if (copyLinkBtn) copyLinkBtn.querySelector('span').textContent = '複製連結';
     }
 
 
