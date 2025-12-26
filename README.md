@@ -1,0 +1,1 @@
+A classic "Egg Catcher" web game built with vanilla JavaScript and the Pixi.js rendering engine. Features dynamic difficulty, multiple item types, game states (including a "crazy mode"), sound effects, and a score sharing option.
